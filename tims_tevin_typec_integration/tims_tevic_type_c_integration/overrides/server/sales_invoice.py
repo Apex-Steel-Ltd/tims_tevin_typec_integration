@@ -29,7 +29,7 @@ def on_submit(doc: Document, method: str | None = None) -> None:
     
     invoice_category = get_invoice_category(doc)
     tax_rate = get_tax_details(doc)
-    # validate_tax_exemption(doc, tax_rate)
+    validate_tax_exemption(doc, tax_rate)
     
     relevant_invoice_number = get_relevant_invoice_number(doc)
     item_details = build_item_details(doc, tax_rate)
