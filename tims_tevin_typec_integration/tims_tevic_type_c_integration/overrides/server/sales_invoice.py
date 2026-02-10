@@ -373,6 +373,30 @@ def bytes_to_base64_string(data: bytes) -> str:
     return b64encode(data).decode("utf-8")
 
 
+# def notify_users(role: str, integration_request: str) -> None:
+#     """Notify users with provided role of the failed integration request
+
+#     Args:
+#         role (str): The role to alert users on
+#         integration_request (str): The integration request to alert users of
+
+#     Returns:
+#         None
+#     """
+#     users = get_users_with_role(role)
+#     recipients = [
+#         get_formatted_email(user).replace("<", "(").replace(">", ")") for user in users
+#     ]
+
+#     frappe.sendmail(
+#         recipients,
+#         subject="TIMS Error",
+#         message=f"An Error has been logged for TIMS Integration under the integration Request: {integration_request}",
+#         reference_doctype="Integration Request",
+#         reference_name=integration_request,
+#         delayed=False,
+#     )
+
 def notify_users(role: str, integration_request: str) -> None:
     """Notify users with provided role of the failed integration request
 
@@ -383,19 +407,48 @@ def notify_users(role: str, integration_request: str) -> None:
     Returns:
         None
     """
+    from frappe.utils import get_formatted_email
+    
     users = get_users_with_role(role)
-    recipients = [
-        get_formatted_email(user).replace("<", "(").replace(">", ")") for user in users
-    ]
+    
+    # Build recipients list with proper validation
+    recipients = []
+    for user in users:
+        user_email = frappe.db.get_value("User", user, "email")
+        user_fullname = frappe.db.get_value("User", user, "full_name")
+        
+        if user_email:
+            # Format as "Full Name <email@example.com>"
+            if user_fullname:
+                recipients.append(f"{user_fullname} <{user_email}>")
+            else:
+                recipients.append(user_email)
+    
+    if not recipients:
+        frappe.log_error(
+            title="TIMS Notification - No Recipients",
+            message=f"No users with role '{role}' have email addresses configured. Integration Request: {integration_request}"
+        )
+        return
 
-    frappe.sendmail(
-        recipients,
-        subject="TIMS Error",
-        message=f"An Error has been logged for TIMS Integration under the integration Request: {integration_request}",
-        reference_doctype="Integration Request",
-        reference_name=integration_request,
-        delayed=False,
-    )
+    try:
+        frappe.sendmail(
+            recipients=recipients,
+            subject="TIMS Integration Error",
+            message=f"""
+                <p>An error has occurred during TIMS integration.</p>
+                <p><strong>Integration Request:</strong> {integration_request}</p>
+                <p>Please check the Integration Request log for more details.</p>
+            """,
+            reference_doctype="Integration Request",
+            reference_name=integration_request,
+            delayed=True
+        )
+    except Exception as e:
+        frappe.log_error(
+            title="TIMS Email Notification Failed",
+            message=f"Error sending notification email: {str(e)}\n{frappe.get_traceback()}"
+        )
 
 def format_time_for_invoice(time: str) -> str:
     """Format time to ensure leading zero for single-digit hours."""

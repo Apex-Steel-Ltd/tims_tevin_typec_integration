@@ -11,7 +11,7 @@
   "event": "Value Change",
   "idx": 0,
   "is_standard": 1,
-  "message": "I am writing to inform you that the remote request we initiated to {{ doc.url }} has failed.\n\nDetails of the Request:\n    Request Type: POST\n    Endpoint URL: {{ doc.url }}\n    Request Parameters: {{ doc.data }}\n    Response Message: {{ doc.error }}\n    Timestamp: {{ doc.created_on }}\n    \nLink: <a href=\"{{frappe.utils.get_url_to_form(doc.doctype, doc.name)}}\">{{doc.name}}</a>.\n\nRegards.",
+  "message": "I am writing to inform you that the remote request we initiated to {{ doc.url }} has failed.\n\nDetails of the Request:\n    Request Type: POST\n    Endpoint URL: {{ doc.url }}\n    Request Parameters: {{ doc.data }}\n    Response Message: {{ doc.error }}\n    Timestamp: {{ doc.creation }}\n    \nLink: <a href=\"{{frappe.utils.get_url_to_form(doc.doctype, doc.name)}}\">{{doc.name}}</a>.\n\nRegards.",
   "message_type": "HTML",
   "modified": "2024-09-24 16:04:17.051601",
   "modified_by": "Administrator",
@@ -21,7 +21,7 @@
   "recipients": [
     {
       "receiver_by_document_field": "owner",
-      "receiver_by_role": "TIMS Administrator"
+      "receiver_by_role": ""
     }
   ],
   "send_system_notification": 1,
