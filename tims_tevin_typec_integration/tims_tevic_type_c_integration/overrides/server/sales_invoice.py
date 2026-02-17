@@ -172,7 +172,7 @@ def format_posting_time(posting_time) -> str:
 
 def get_buyer_pin(doc) -> str:
     """Get the buyer's PIN/KRA tax ID"""
-    CASH_CUSTOMER_CONTROL = "Cash Customer"  # This should probably be a constant defined elsewhere
+    # CASH_CUSTOMER_CONTROL = "Cash Customer"  # This should probably be a constant defined elsewhere
     if doc.customer == CASH_CUSTOMER_CONTROL:
         return doc.custom_cash_customer_kra_pin or ""
     return doc.tax_id or ""
