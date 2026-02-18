@@ -181,6 +181,7 @@ def get_buyer_pin(doc) -> str:
 def build_payload(doc, setting, invoice_category, relevant_invoice_number, item_details) -> dict:
     """Build the payload for TIMS submission"""
     trader_invoice_no = get_trader_invoice_number(doc)
+    trader_invoice_no = doc.name
     posting_time = format_posting_time(doc.posting_time)
     pin = get_buyer_pin(doc)
     
