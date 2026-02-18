@@ -172,15 +172,18 @@ def format_posting_time(posting_time) -> str:
 
 def get_buyer_pin(doc) -> str:
     """Get the buyer's PIN/KRA tax ID"""
-    # CASH_CUSTOMER_CONTROL = "Cash Customer"  # This should probably be a constant defined elsewhere
     if doc.customer == CASH_CUSTOMER_CONTROL:
+        if doc.custom_without_kra_pin == 1:
+            return ""
         return doc.custom_cash_customer_kra_pin or ""
+    
     return doc.tax_id or ""
 
 
 def build_payload(doc, setting, invoice_category, relevant_invoice_number, item_details) -> dict:
     """Build the payload for TIMS submission"""
-    trader_invoice_no = get_trader_invoice_number(doc)
+    # trader_invoice_no = get_trader_invoice_number(doc)
+    trader_invoice_no = doc.name
     posting_time = format_posting_time(doc.posting_time)
     pin = get_buyer_pin(doc)
     
