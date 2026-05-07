@@ -134,7 +134,7 @@ def build_item_details(doc, tax_rate) -> list[dict]:
             "TransactionType": "1",
             "UnitPrice": item.base_net_rate,
             "Quantity": abs(item.qty),
-            "HSCode":item.custom_hs_code
+            "HSCode": item.custom_hs_code or ""
         }
         
         if tax_rate == 0:
@@ -148,6 +148,7 @@ def build_item_details(doc, tax_rate) -> list[dict]:
                 "TaxRate": float(item.custom_tax_rate),
                 "TaxAmount": abs(float(item.custom_tax_amount)),
             })
+            item_data["HSCode"] = ""
         
         item_details.append(item_data)
     
