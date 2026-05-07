@@ -14,6 +14,8 @@ def calculate_tax(doc):
     
 def items_tax_fields(doc):
     taxes_template = doc.taxes_and_charges
+    if not taxes_template:
+        return None
     tax_template = frappe.get_doc("Sales Taxes and Charges Template", taxes_template)
     if tax_template.taxes:
         return tax_template.taxes[0].rate
@@ -31,10 +33,13 @@ def before_save_sales_invoice(doc, method=None):
     
 
 def get_hs_code_before_save(doc):
+    tax_rate = items_tax_fields(doc)
     for item in doc.items:
-        hs_code = get_hs_code_item_tax(item.item_code, item.item_tax_template)
-        item.custom_hs_code = hs_code or ""
-        
+        if tax_rate == 0:
+            hs_code = get_hs_code_item_tax(item.item_code, item.item_tax_template)
+            item.custom_hs_code = hs_code or ""
+        else:
+            item.custom_hs_code = ""
 
 def get_hs_code_item_tax(item_code, item_tax_template_name=None):
     """
